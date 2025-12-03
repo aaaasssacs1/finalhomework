@@ -64,6 +64,10 @@ sudo apt install libmodbus-dev libmodbus5
 
 ## 📖 运行说明
 
+运行截图：
+
+![运行截图](./plc.png)
+
 ### 1. 模拟模式 (默认)
 直接运行程序，无需 PLC 硬件。程序会生成随机的温度、压力数据和 CPU 负载演示。
 ```bash
