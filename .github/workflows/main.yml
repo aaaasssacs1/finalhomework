@@ -43,22 +43,29 @@ jobs:
         :: 开始编译
         nmake
 
-    # 5. 打包 (使用 windeployqt 自动抓取 DLL)
+    # 5. 打包
     - name: Package
       shell: cmd
       run: |
+        :: 重新加载 MSVC 环境，确保 windeployqt 能找到 VC 运行时库
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        
         cd build
         mkdir release_output
         
-        :: 复制主程序
+        :: 1. 复制主程序
         copy PlcMonitor.exe release_output\
         
-        :: 运行 windeployqt 自动复制 Qt 依赖
+        :: 2. 调试：列出 vcpkg bin 目录的内容（如果失败，方便查看文件名）
+        echo List of vcpkg bin files:
+        dir C:\vcpkg\installed\x64-windows\bin\
+        
+        :: 3. 智能复制 libmodbus DLL (使用通配符匹配 libmodbus.dll 或 modbus.dll)
+        copy C:\vcpkg\installed\x64-windows\bin\*modbus*.dll release_output\
+        
+        :: 4. 运行 windeployqt
         windeployqt --release --compiler-runtime release_output\PlcMonitor.exe
         
-        :: 复制 libmodbus.dll (vcpkg 安装的位置通常在这里)
-        copy C:\vcpkg\installed\x64-windows\bin\modbus.dll release_output\
-
     # 6. 上传结果 (修复了版本号 v3 -> v4)
     - name: Upload Artifact
       uses: actions/upload-artifact@v4  # <--- 这里必须是 v4
