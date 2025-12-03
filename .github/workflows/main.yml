@@ -1,0 +1,54 @@
+name: Windows Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 1. 安装 Qt6
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.6.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_mingw'
+        modules: 'qtcharts'
+
+    # 2. 安装 libmodbus (使用 vcpkg)
+    - name: Install libmodbus via vcpkg
+      run: |
+        vcpkg install libmodbus:x64-windows
+        vcpkg integrate install
+
+    # 3. 编译
+    - name: Build
+      shell: cmd
+      run: |
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        mkdir build
+        cd build
+        cmake .. -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+        mingw32-make
+
+    # 4. 打包 (使用 windeployqt)
+    - name: Package
+      shell: cmd
+      run: |
+        cd build
+        windeployqt --release PlcMonitor.exe
+        mkdir release_output
+        copy PlcMonitor.exe release_output\
+        copy *.dll release_output\
+
+    # 5. 上传生成的 exe 为 Artifact
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: PlcMonitor-Windows
+        path: build/release_output
