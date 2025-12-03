@@ -7,48 +7,61 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    # 1. 拉取代码
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    # 1. 安装 Qt6
+    # 2. 安装 Qt6 (使用 MSVC 版本，兼容性更好)
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
         version: '6.6.0'
         host: 'windows'
         target: 'desktop'
-        arch: 'win64_mingw'
+        arch: 'win64_msvc2019_64' # 改用 MSVC
         modules: 'qtcharts'
 
-    # 2. 安装 libmodbus (使用 vcpkg)
+    # 3. 安装 libmodbus (使用 vcpkg，自动适配 MSVC)
     - name: Install libmodbus via vcpkg
       run: |
         vcpkg install libmodbus:x64-windows
         vcpkg integrate install
 
-    # 3. 编译
-    - name: Build
+    # 4. 编译 (使用 CMake + MSVC)
+    - name: Configure and Build
       shell: cmd
       run: |
         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         mkdir build
         cd build
-        cmake .. -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
-        mingw32-make
+        
+        :: 配置 CMake，指定使用 vcpkg 的工具链文件来查找库
+        cmake .. -G "NMake Makefiles" ^
+                 -DCMAKE_BUILD_TYPE=Release ^
+                 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+        
+        :: 开始编译
+        nmake
 
-    # 4. 打包 (使用 windeployqt)
+    # 5. 打包 (使用 windeployqt 自动抓取 DLL)
     - name: Package
       shell: cmd
       run: |
         cd build
-        windeployqt --release PlcMonitor.exe
         mkdir release_output
+        
+        :: 复制主程序
         copy PlcMonitor.exe release_output\
-        copy *.dll release_output\
+        
+        :: 运行 windeployqt 自动复制 Qt 依赖
+        windeployqt --release --compiler-runtime release_output\PlcMonitor.exe
+        
+        :: 复制 libmodbus.dll (vcpkg 安装的位置通常在这里)
+        copy C:\vcpkg\installed\x64-windows\bin\modbus.dll release_output\
 
-    # 5. 上传生成的 exe 为 Artifact
+    # 6. 上传结果 (修复了版本号 v3 -> v4)
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4  # <--- 这里必须是 v4
       with:
         name: PlcMonitor-Windows
-        path: build/release_output
+        path: build/release_output/
