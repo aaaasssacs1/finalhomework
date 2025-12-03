@@ -1,42 +1,45 @@
-cmake_minimum_required(VERSION 3.16)
+#pragma once
+#include <QObject>
+#include <modbus/modbus.h>
 
-project(PlcMonitor VERSION 1.0.0 LANGUAGES CXX)
+// 定义一个结构体包含所有传感器数据
+struct PlcData {
+    double temperature; // 温度
+    double pressure;    // 压力 (新增)
+    bool isValid;       // 数据是否有效
+};
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+// 为了让 Qt 信号槽能传递结构体，需注册类型（在 cpp 中注册或使用 QVariant，这里简单处理直接传值）
+Q_DECLARE_METATYPE(PlcData)
 
-# 查找 Qt6 包
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Charts Sql)
+class ModbusWorker : public QObject {
+    Q_OBJECT
+public:
+    explicit ModbusWorker(QObject *parent = nullptr);
+    ~ModbusWorker();
 
-# 查找 Libmodbus
-find_path(MODBUS_INCLUDE_DIR modbus.h PATH_SUFFIXES modbus)
-find_library(MODBUS_LIBRARY modbus)
+    void setupConnection(const QString &ip, int port);
+    void setReadParameters(int slaveId, int startAddress, int count);
+    void process();
+    void stop();
+    void setSimulationMode(bool active);
 
-include_directories(include ${MODBUS_INCLUDE_DIR})
+signals:
+    // 修改信号：传递结构体数据，而不是单个 double
+    void dataRefreshed(PlcData data); 
+    
+    void errorOccurred(QString msg);
+    void connectionStatusChanged(bool connected);
 
-# 源文件
-set(SOURCES
-    src/main.cpp
-    src/MainWindow.cpp
-    src/ModbusWorker.cpp
-    src/DbManager.cpp
-    include/MainWindow.h
-    include/ModbusWorker.h
-    include/DbManager.h
-)
+private:
+    modbus_t *m_ctx = nullptr;
+    bool m_running;
+    bool m_simulationMode = false;
+    
+    QString m_ip;
+    int m_port;
 
-# 可执行文件
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-# 链接库
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    Qt6::Core
-    Qt6::Gui
-    Qt6::Widgets
-    Qt6::Charts
-    Qt6::Sql
-    ${MODBUS_LIBRARY}
-)
+    int m_slaveId = 1;
+    int m_startAddress = 0;
+    int m_numRegisters = 2; // 改为 2：读取温度(0) + 压力(1)
+};
