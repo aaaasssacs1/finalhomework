@@ -11,11 +11,7 @@ set(CMAKE_AUTOUIC ON)
 # 查找 Qt6 包
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Charts Sql)
 
-# 查找 Libmodbus
-find_path(MODBUS_INCLUDE_DIR modbus.h PATH_SUFFIXES modbus)
-find_library(MODBUS_LIBRARY modbus)
-
-# 查找 libmodbus 的命令
+# 查找 Libmodbus (完全依赖 vcpkg 提供的配置模式)
 find_package(libmodbus CONFIG REQUIRED)
 
 include_directories(include ${MODBUS_INCLUDE_DIR})
@@ -41,7 +37,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     Qt6::Widgets
     Qt6::Charts
     Qt6::Sql
-    ${MODBUS_LIBRARY}
-
     modbus
 )
