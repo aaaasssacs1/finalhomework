@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include <modbus/modbus.h>
+#include <modbus.h>
 
 // 定义一个结构体包含所有传感器数据
 struct PlcData {
