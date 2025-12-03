@@ -15,7 +15,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Charts Sql)
 find_path(MODBUS_INCLUDE_DIR modbus.h PATH_SUFFIXES modbus)
 find_library(MODBUS_LIBRARY modbus)
 
-查找 libmodbus 的命令
+# 查找 libmodbus 的命令
 find_package(libmodbus CONFIG REQUIRED)
 
 include_directories(include ${MODBUS_INCLUDE_DIR})
