@@ -121,13 +121,11 @@ sudo apt install libmodbus-dev libmodbus5
 PlcMonitor/
 ├── CMakeLists.txt       # CMake 构建脚本
 ├── include/             # 头文件
-│   ├── CpuMonitor.h     # CPU 负载读取类
 │   ├── DbManager.h      # SQLite 数据库管理
 │   ├── MainWindow.h     # 主界面 UI 逻辑
 │   └── ModbusWorker.h   # Modbus 通讯工作线程
 ├── src/                 # 源文件
 │   ├── main.cpp         # 程序入口与参数解析
-│   ├── CpuMonitor.cpp   # /proc/stat 解析实现
 │   ├── DbManager.cpp    # 数据库 CRUD 实现
 │   ├── MainWindow.cpp   # 界面布局与图表绘制
 │   └── ModbusWorker.cpp # Modbus 读写与自动重连逻辑
