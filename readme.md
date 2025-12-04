@@ -31,8 +31,7 @@
 
 *   **C++ Compiler**: 支持 C++17 (GCC/Clang)
 *   **CMake**: >= 3.16
-*   **Qt6**: Core, Gui, Widgets, Charts
-*   **Sql：使用内置 SQLite
+*   **Qt6**: Core, Gui, Widgets, Charts, Sql
 *   **libmodbus**: 工业 Modbus 通讯库
 
 ### 快速安装依赖 (Ubuntu/Debian)
