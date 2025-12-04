@@ -31,7 +31,8 @@
 
 *   **C++ Compiler**: 支持 C++17 (GCC/Clang)
 *   **CMake**: >= 3.16
-*   **Qt6**: Core, Gui, Widgets, Charts, Sql
+*   **Qt6**: Core, Gui, Widgets, Charts
+*   **Sql：使用内置 SQLite
 *   **libmodbus**: 工业 Modbus 通讯库
 
 ### 快速安装依赖 (Ubuntu/Debian)
@@ -49,8 +50,8 @@ sudo apt install libmodbus-dev libmodbus5
 
 1.  **克隆项目**
     ```bash
-    git clone https://github.com/your-repo/PlcMonitor.git
-    cd PlcMonitor
+    git clone https://github.com/aaaasssacs1/finalhomework.git
+    cd finalhomework
     ```
 
 2.  **构建项目**
