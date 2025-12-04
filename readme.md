@@ -4,7 +4,7 @@
 [![Qt](https://img.shields.io/badge/Qt-6.x-green.svg)](https://www.qt.io/)
 [![Language](https://img.shields.io/badge/C++-17-orange.svg)](https://en.cppreference.com/w/cpp/17)
 
-这是一个高性能的轻量级工业 PLC 监控工具，基于 **C++17** 和 **Qt6** 开发。它能够通过 **Modbus TCP** 协议实时采集 PLC 的传感器数据（温度、压力），所有数据均支持可视化展示与本地数据库存储，并在界面上进行可视化展示（仪表盘、实时曲线），同时将数据自动记录到 SQLite 数。
+这是一个高性能的轻量级工业 PLC 监控工具，基于 **C++17** 和 **Qt6** 开发。它能够通过 **Modbus TCP** 协议实时采集 PLC 的传感器数据（温度、压力），并在界面上进行可视化展示（仪表盘、实时曲线），同时将数据自动记录到 SQLite 数据。
 
 ## ✨ 主要功能
 
